@@ -50,7 +50,13 @@ h1, h2, h3 {
     margin-top: 5px;
     border: 1px solid #ddd;
     border-radius: 4px;
-	text-align: left;
+}
+
+#q11 input[type="number"] {
+    display: block; /* Makes the input take its own line, separating it from the image */
+    margin-left: 0;   /* Pushes it to the left edge of its parent container */
+    margin-right: auto; /* Works with margin-left:0 to keep it left-aligned */
+    text-align: left; /* Ensures text *inside* the input is left-aligned */
 }
 
 .question-block input.small-input {

@@ -9,24 +9,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const overallScoreElement = document.getElementById('overallScore');
     const overallExpectationsElement = document.getElementById('overallExpectations');
     const timerDisplay = document.getElementById('time');
-    const sendEmailBtn = document.getElementById('sendEmailBtn'); // Will be hidden for auto-send
+    const sendEmailBtn = document.getElementById('sendEmailBtn');
     const emailStatus = document.getElementById('emailStatus');
 
     // --- User Info Storage ---
     let parentName = '';
     let childName = '';
     let parentEmail = '';
-    let assessmentTextResults = ''; // To store plain text results for emailing
-    let assessmentHtmlResults = ''; // To store HTML results for emailing
+    let assessmentTextResults = '';
+    let assessmentHtmlResults = '';
+	const CURRENT_KEY_STAGE = "Key Stage 2";
 
     // --- Timer Variables ---
-    const totalTime = 15 * 60; // 15 minutes in seconds
+    const totalTime = 30 * 60; // 30 minutes in seconds (INCREASED FOR 30 Qs)
     let timeLeft = totalTime;
     let timerInterval;
 
-    // --- Assessment Data (UPDATED FOR KS2) ---
+    // --- Assessment Data (UPDATED FOR KS2 - 30 QUESTIONS) ---
     const correctAnswers = {
-        // English
+        // Existing English Questions (Q1-Q6)
         q1: 'a', // quickly (adverb)
         q2: 'c', // went (past tense)
         q3: 'children', // plural of child
@@ -34,46 +35,60 @@ document.addEventListener('DOMContentLoaded', () => {
         q5: 'singing', // main verb
         q6: 'b', // ! (Exclamation mark)
 
-        // Maths
-        q7: 536,   // 347 + 189
-        q8: 56,    // 7 * 8
-        q9: 'c',   // 3/4 (1 - 1/4)
-        q10: 20,   // 25% of 80
-        q11: 120,  // Angle x on a straight line (180 - 60)
-        q12: 60    // 120 miles / 2 hours
+        // NEW KS2 English Questions (Q7-Q15)
+        q7: 'He walked to school.',
+        q8: 'clever',
+        q9: 'b', // big
+        q10: 'on', // preposition
+        q11: 'b', // received
+        q12: 'In the morning, I eat breakfast.',
+        q13: 'better',
+        q14: 'played',
+        q15: 'What is your name?', // example: flexible matching
+
+        // Existing Maths Questions (Q16-Q21)
+        q16: 536,   // 347 + 189
+        q17: 56,    // 7 * 8
+        q18: 'c',   // 3/4 (1 - 1/4)
+        q19: 20,    // 25% of 80
+        q20: 120,   // Angle x on a straight line (180 - 60)
+        q21: 60,    // 120 miles / 2 hours
+
+        // NEW KS2 Maths Questions (Q22-Q30)
+        q22: 333,   // 456 - 123
+        q23: 12,    // 60 / 5
+        q24: 0.5,   // 1/2 as decimal
+        q25: 180,   // 3 hours * 60 minutes
+        q26: 28,    // perimeter of square 7*4
+        q27: '7,10,15,23', // arranged smallest to largest
+        q28: 10,    // next in sequence 2,4,6,8,10
+        q29: 350,   // 347 to nearest 10
+        q30: '1/2'  // 0.5 as a fraction
     };
 
-    const questionPoints = {
-        q1: 1, q2: 1, q3: 2, q4: 2, q5: 1, q6: 1, // English (1+1+2+2+1+1 = 8 points)
-        q7: 1, q8: 1, q9: 1, q10: 1, q11: 2, q12: 1  // Maths (1+1+1+1+2+1 = 7 points)
-    };
-    // Total possible score is 8 + 7 = 15 points.
+    // All questions are 1 point for simplicity, making total score out of 30.
+    const questionPoints = Array.from({length: 30}, (_, i) => ({[`q${i + 1}`]: 1}))
+        .reduce((acc, curr) => ({...acc, ...curr}), {});
 
     // --- Event Listeners ---
-
-    // 1. Info Form Submission (Start Assessment)
     infoForm.addEventListener('submit', function(event) {
         event.preventDefault();
-
-        // Get user input
         parentName = document.getElementById('parentName').value.trim();
         childName = document.getElementById('childName').value.trim();
         parentEmail = document.getElementById('parentEmail').value.trim();
-
         if (parentName && childName && parentEmail) {
-            infoCollectionDiv.style.display = 'none'; // Hide info form
-            assessmentSectionDiv.style.display = 'block'; // Show assessment
-            startTimer(); // Start the timer ONLY when the assessment begins
+            infoCollectionDiv.style.display = 'none';
+            assessmentSectionDiv.style.display = 'block';
+            startTimer();
         } else {
             alert('Please fill in all required information.');
         }
     });
 
-    // 2. Assessment Form Submission
     assessmentForm.addEventListener('submit', function(event) {
         event.preventDefault();
-        clearInterval(timerInterval); // Stop the timer
-        submitAssessment(); // Process results
+        clearInterval(timerInterval);
+        submitAssessment();
     });
 
     // --- Functions ---
@@ -87,7 +102,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
-                // No alert, auto-submit
                 submitAssessment();
             }
         }, 1000);
@@ -95,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function submitAssessment() {
         let totalScore = 0;
-        detailedResultsDiv.innerHTML = ''; // Clear previous results
+        detailedResultsDiv.innerHTML = '';
         assessmentTextResults = `--- Key Stage 2 Assessment Results for ${childName} (Parent: ${parentName}) ---\n\n`;
         assessmentHtmlResults = `
             <!DOCTYPE html>
@@ -123,12 +137,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p><strong>Parent Email:</strong> ${parentEmail}</p>
                     <hr>
                     <h3>Detailed Results:</h3>
-        `; // End of assessmentHtmlResults initial string
+        `;
 
-        const questions = [
-            'q1', 'q2', 'q3', 'q4', 'q5', 'q6',
-            'q7', 'q8', 'q9', 'q10', 'q11', 'q12'
-        ];
+        const questions = Array.from({length: 30}, (_, i) => `q${i + 1}`);
 
         questions.forEach(qId => {
             let userAnswer;
@@ -136,94 +147,96 @@ document.addEventListener('DOMContentLoaded', () => {
             let score = 0;
             const correctAns = correctAnswers[qId];
             const maxPoints = questionPoints[qId];
-            let expectationText = '';
-            let expectationClass = '';
+            let outcomeText = '';
+            let outcomeClass = '';
 
             const qElement = document.getElementById(qId);
             const questionTitle = qElement ? qElement.querySelector('h3').textContent : `Question ${qId.toUpperCase()}`;
 
-            // Handle different input types
-            if (['q1', 'q2', 'q6', 'q9'].includes(qId)) { // Radio buttons
+            const inputField = document.querySelector(`[name="${qId}_answer"]`);
+            if (!inputField) {
+                userAnswer = 'N/A (Input field not found)';
+                isCorrect = false;
+            } else if (inputField.type === 'radio') {
                 const selectedRadio = document.querySelector(`input[name="${qId}_answer"]:checked`);
                 userAnswer = selectedRadio ? selectedRadio.value : 'No Answer';
                 isCorrect = (userAnswer === correctAns);
-            } else if (['q3', 'q4', 'q5'].includes(qId)) { // Text inputs (English specific string comparisons)
-                userAnswer = document.querySelector(`input[name="${qId}_answer"]`).value.trim();
-                // For text answers, make comparison case-insensitive unless exact match is needed (like q4)
-                if (qId === 'q4') { // Exact match for sentence rewriting
+            } else if (inputField.type === 'text') {
+                userAnswer = inputField.value.trim();
+                // Specific handling for answers requiring exact case or phrasing
+                if (qId === 'q4' || qId === 'q7' || qId === 'q12' || qId === 'q27' || qId === 'q30') { // Exact match for sentences/phrases
                      isCorrect = (userAnswer === correctAns);
-                } else { // Case-insensitive for 'children' or 'singing'
+                } else if (qId === 'q15') { // More flexible for open sentences
+                    isCorrect = String(correctAns).toLowerCase().includes(userAnswer.toLowerCase()) || userAnswer.toLowerCase().includes(String(correctAns).toLowerCase());
+                }
+                else { // Case-insensitive for other text answers
                      isCorrect = (userAnswer.toLowerCase() === String(correctAns).toLowerCase());
                 }
-            } else if (['q7', 'q8', 'q10', 'q11', 'q12'].includes(qId)) { // Number inputs
-                userAnswer = parseInt(document.querySelector(`input[name="${qId}_answer"]`).value, 10);
+            } else if (inputField.type === 'number') {
+                userAnswer = parseFloat(inputField.value);
                 isCorrect = (userAnswer === correctAns);
             }
 
             if (isCorrect) {
                 score = maxPoints;
                 totalScore += score;
-                expectationText = 'Correct';
-                expectationClass = 'correct'; // Changed to 'correct' for individual questions
+                outcomeText = 'Correct';
+                outcomeClass = 'correct';
             } else {
                 score = 0;
-                expectationText = 'Incorrect';
-                expectationClass = 'incorrect'; // Changed to 'incorrect' for individual questions
+                outcomeText = 'Incorrect';
+                outcomeClass = 'incorrect';
             }
 
-            // Append detailed results to the HTML for display on page
             detailedResultsDiv.innerHTML += `
                 <div class="result-item">
                     <h4>${questionTitle}</h4>
                     <p><strong>Your Answer:</strong> ${userAnswer}</p>
                     <p><strong>Correct Answer:</strong> ${correctAns}</p>
                     <p><strong>Score:</strong> ${score}/${maxPoints}</p>
-                    <p><strong>Outcome:</strong> <span class="${expectationClass}">${expectationText}</span></p>
+                    <p><strong>Outcome:</strong> <span class="${outcomeClass}">${outcomeText}</span></p>
                 </div>
             `;
 
-            // Append detailed results to the plain text summary for email
             assessmentTextResults += `Question: ${questionTitle}\n`;
             assessmentTextResults += `  Your Answer: ${userAnswer}\n`;
             assessmentTextResults += `  Correct Answer: ${correctAns}\n`;
             assessmentTextResults += `  Score: ${score}/${maxPoints}\n`;
-            assessmentTextResults += `  Outcome: ${expectationText}\n\n`;
+            assessmentTextResults += `  Outcome: ${outcomeText}\n\n`;
 
-            // Append detailed results to the HTML summary for email
             assessmentHtmlResults += `
                 <div class="question-item">
                     <h4>${questionTitle}</h4>
                     <p><strong>Your Answer:</strong> ${userAnswer}</p>
                     <p><strong>Correct Answer:</strong> ${correctAns}</p>
                     <p><strong>Score:</strong> ${score}/${maxPoints}</p>
-                    <p><strong>Outcome:</strong> <span class="${expectationClass}">${expectationText}</span></p>
+                    <p><strong>Outcome:</strong> <span class="${outcomeClass}">${outcomeText}</span></p>
                 </div>
             `;
         });
 
-        overallScoreElement.textContent = `Overall Score: ${totalScore}/15`;
-        assessmentTextResults += `\nOverall Score: ${totalScore}/15\n`;
+        overallScoreElement.textContent = `Overall Score: ${totalScore}/30`;
+        assessmentTextResults += `\nOverall Score: ${totalScore}/30\n`;
 
         let overallExpectations = '';
         let overallExpectationsClass = '';
-        // Adjusted thresholds for KS2 (example: can be fine-tuned based on test difficulty)
-        if (totalScore >= 12) { // Example: 12/15 for Above Expectations
+        // Adjusted thresholds for KS2 (for 30 questions)
+        if (totalScore >= 23) { // ~77% and above
             overallExpectations = 'Above Expectations (Excellent understanding)';
             overallExpectationsClass = 'expectation-above';
-        } else if (totalScore >= 8) { // Example: 8/15 for Meets Expectations
+        } else if (totalScore >= 15) { // ~50% to 76%
             overallExpectations = 'Meets Expectations (Good understanding)';
             overallExpectationsClass = 'expectation-meets';
-        } else {
+        } else { // Below 50%
             overallExpectations = 'Below Expectations (Needs more support)';
             overallExpectationsClass = 'expectation-below';
         }
         overallExpectationsElement.innerHTML = `Overall Outcome: <span class="${overallExpectationsClass}">${overallExpectations}</span>`;
         assessmentTextResults += `Overall Outcome: ${overallExpectations}\n`;
 
-        // End of assessmentHtmlResults string
         assessmentHtmlResults += `
                     <div class="score-summary">
-                        <h3>Overall Score: ${totalScore}/15</h3>
+                        <h3>Overall Score: ${totalScore}/30</h3>
                         <h3>Overall Outcome: <span class="${overallExpectationsClass}">${overallExpectations}</span></h3>
                     </div>
                     <p>If you have any questions, please reply to this email.</p>
@@ -233,18 +246,16 @@ document.addEventListener('DOMContentLoaded', () => {
             </html>
         `;
 
-        assessmentSectionDiv.style.display = 'none'; // Hide assessment form
-        resultsDiv.style.display = 'block';   // Show results
+        assessmentSectionDiv.style.display = 'none';
+        resultsDiv.style.display = 'block';
 
-        // --- Auto-send email and hide the button ---
-        sendEmailBtn.style.display = 'none'; // Hide the button
+        sendEmailBtn.style.display = 'none';
         sendAssessmentEmail(parentName, childName, parentEmail, assessmentTextResults, assessmentHtmlResults);
     }
 
-    // --- Send Email Function (Client-side, calls Netlify Function) ---
     async function sendAssessmentEmail(parentName, childName, parentEmail, resultsText, resultsHtml) {
         emailStatus.textContent = 'Sending email...';
-        emailStatus.style.color = '#007bff'; // Blue for sending
+        emailStatus.style.color = '#007bff';
 
         try {
             const response = await fetch('/.netlify/functions/send-email', {
@@ -256,24 +267,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     parentName: parentName,
                     childName: childName,
                     parentEmail: parentEmail,
-                    resultsText: resultsText, // Pass plain text results
-                    resultsHtml: resultsHtml  // Pass HTML results
+                    resultsText: resultsText,
+                    resultsHtml: resultsHtml,
+                    keyStage: CURRENT_KEY_STAGE
                 }),
             });
 
             if (response.ok) {
                 emailStatus.textContent = 'Email sent successfully!';
-                emailStatus.style.color = '#28a745'; // Green for success
+                emailStatus.style.color = '#28a745';
             } else {
                 const errorData = await response.json();
                 console.error('Error sending email:', errorData.message);
                 emailStatus.textContent = `Failed to send email: ${errorData.message || 'Server error'}`;
-                emailStatus.style.color = '#dc3545'; // Red for error
+                emailStatus.style.color = '#dc3545';
             }
         } catch (error) {
             console.error('Network or unexpected error:', error);
             emailStatus.textContent = `Failed to send email: Network error`;
-            emailStatus.style.color = '#dc3545'; // Red for error
+            emailStatus.style.color = '#dc3545';
         }
     }
 });

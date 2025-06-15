@@ -18,10 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let parentEmail = '';
     let assessmentTextResults = '';
     let assessmentHtmlResults = '';
-	const CURRENT_KEY_STAGE = "Key Stage 2";
 
     // --- Timer Variables ---
-    const totalTime = 30 * 60; // 30 minutes in seconds (INCREASED FOR 30 Qs)
+    const totalTime = 15 * 60; // 15 minutes in seconds
     let timeLeft = totalTime;
     let timerInterval;
 
@@ -44,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         q12: 'In the morning, I eat breakfast.',
         q13: 'better',
         q14: 'played',
-        q15: 'What is your name?', // example: flexible matching
+        q15: 'Sentence starts with capital letter and ends with ?',
 
         // Existing Maths Questions (Q16-Q21)
         q16: 536,   // 347 + 189
@@ -60,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         q24: 0.5,   // 1/2 as decimal
         q25: 180,   // 3 hours * 60 minutes
         q26: 28,    // perimeter of square 7*4
-        q27: '7,10,15,23', // arranged smallest to largest
+        q27: '7,10,15,23', // Correct answer is stored without spaces
         q28: 10,    // next in sequence 2,4,6,8,10
         q29: 350,   // 347 to nearest 10
         q30: '1/2'  // 0.5 as a fraction
@@ -163,13 +162,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 isCorrect = (userAnswer === correctAns);
             } else if (inputField.type === 'text') {
                 userAnswer = inputField.value.trim();
-                // Specific handling for answers requiring exact case or phrasing
-                if (qId === 'q4' || qId === 'q7' || qId === 'q12' || qId === 'q27' || qId === 'q30') { // Exact match for sentences/phrases
-                     isCorrect = (userAnswer === correctAns);
-                } else if (qId === 'q15') { // More flexible for open sentences
-                    isCorrect = String(correctAns).toLowerCase().includes(userAnswer.toLowerCase()) || userAnswer.toLowerCase().includes(String(correctAns).toLowerCase());
+
+                if (qId === 'q15') {
+                    const trimmedAnswer = userAnswer.trim();
+                    if (trimmedAnswer.length === 0) {
+                        isCorrect = false;
+                    } else {
+                        const firstChar = trimmedAnswer.charAt(0);
+                        const lastChar = trimmedAnswer.charAt(trimmedAnswer.length - 1);
+                        const startsWithCapital = (firstChar === firstChar.toUpperCase() && firstChar !== firstChar.toLowerCase());
+                        const endsWithQuestionMark = (lastChar === '?');
+                        isCorrect = startsWithCapital && endsWithQuestionMark;
+                    }
+                } else if (qId === 'q27') { // NEW LOGIC for Q27: Normalize input by removing all spaces
+                    const normalizedUserAnswer = userAnswer.replace(/\s/g, ''); // Remove all whitespace
+                    isCorrect = (normalizedUserAnswer === correctAns);
                 }
-                else { // Case-insensitive for other text answers
+                else if (qId === 'q4' || qId === 'q7' || qId === 'q12' || qId === 'q30') {
+                     // Exact match for specific sentences/phrases (case-sensitive as determined by correctAns)
+                     isCorrect = (userAnswer === correctAns);
+                } else {
+                     // Case-insensitive for other general text answers
                      isCorrect = (userAnswer.toLowerCase() === String(correctAns).toLowerCase());
                 }
             } else if (inputField.type === 'number') {
@@ -220,14 +233,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let overallExpectations = '';
         let overallExpectationsClass = '';
-        // Adjusted thresholds for KS2 (for 30 questions)
-        if (totalScore >= 23) { // ~77% and above
+        if (totalScore >= 23) {
             overallExpectations = 'Above Expectations (Excellent understanding)';
             overallExpectationsClass = 'expectation-above';
-        } else if (totalScore >= 15) { // ~50% to 76%
+        } else if (totalScore >= 15) {
             overallExpectations = 'Meets Expectations (Good understanding)';
             overallExpectationsClass = 'expectation-meets';
-        } else { // Below 50%
+        } else {
             overallExpectations = 'Below Expectations (Needs more support)';
             overallExpectationsClass = 'expectation-below';
         }
@@ -268,8 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     childName: childName,
                     parentEmail: parentEmail,
                     resultsText: resultsText,
-                    resultsHtml: resultsHtml,
-                    keyStage: CURRENT_KEY_STAGE
+                    resultsHtml: resultsHtml
                 }),
             });
 

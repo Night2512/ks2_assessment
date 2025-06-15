@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Key Stage 2 Online Assessment - Mona Teaches</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Key Stage 2 Online Assessment - Mona Teaches</h1>
+
+        <div id="infoCollection" class="section">
+            <h2>Start Your Assessment</h2>
+            <p>Please provide the following information to begin the assessment:</p>
+            <form id="infoForm">
+                <div class="question-block">
+                    <label for="parentName">Parent's Name:</label>
+                    <input type="text" id="parentName" name="parentName" required>
+                </div>
+                <div class="question-block">
+                    <label for="childName">Child's Name:</label>
+                    <input type="text" id="childName" name="childName" required>
+                </div>
+                <div class="question-block">
+                    <label for="parentEmail">Parent's Email Address:</label>
+                    <input type="email" id="parentEmail" name="parentEmail" required>
+                </div>
+				<div class="passage">
+                    <p>The assessment has a 15 minute time limit. It will automatically submit once this time expires.</p>
+                </div>
+                <button type="submit" id="startAssessmentBtn">Start Assessment</button>
+            </form>
+        </div>
+
+        <div id="assessmentSection" class="section" style="display: none;">
+            <h2>Assessment</h2>
+            <div id="timer">Time Left: <span id="time">15:00</span></div>
+            <form id="assessmentForm">
+                <div class="question" id="q1">
+                    <h3>Q1. Which word is an adverb?</h3>
+                    <label><input type="radio" name="q1_answer" value="a"> quickly</label><br>
+                    <label><input type="radio" name="q1_answer" value="b"> beautiful</label><br>
+                    <label><input type="radio" name="q1_answer" value="c"> jump</label><br>
+                </div>
+
+                <div class="question" id="q2">
+                    <h3>Q2. Complete the sentence: "She ______ to the shop yesterday."</h3>
+                    <label><input type="radio" name="q2_answer" value="a"> go</label><br>
+                    <label><input type="radio" name="q2_answer" value="b"> goes</label><br>
+                    <label><input type="radio" name="q2_answer" value="c"> went</label><br>
+                </div>
+
+                <div class="question" id="q3">
+                    <h3>Q3. What is the correct plural of 'child'?</h3>
+                    <input type="text" name="q3_answer" placeholder="Type your answer here">
+                </div>
+
+                <div class="question" id="q4">
+                    <h3>Q4. Rewrite this sentence using an apostrophe for possession: "The car belonging to Tom is red."</h3>
+                    <input type="text" name="q4_answer" placeholder="Type your answer here">
+                </div>
+
+                <div class="question" id="q5">
+                    <h3>Q5. Identify the main verb in the sentence: "The birds are singing loudly."</h3>
+                    <input type="text" name="q5_answer" placeholder="Type your answer here">
+                </div>
+
+                <div class="question" id="q6">
+                    <h3>Q6. Which punctuation mark is missing from this sentence? "What a lovely day"</h3>
+                    <label><input type="radio" name="q6_answer" value="a"> . (Full stop)</label><br>
+                    <label><input type="radio" name="q6_answer" value="b"> ! (Exclamation mark)</label><br>
+                    <label><input type="radio" name="q6_answer" value="c"> ? (Question mark)</label><br>
+                </div>
+
+                <div class="question" id="q7">
+                    <h3>Q7. What is 347 + 189?</h3>
+                    <input type="number" name="q7_answer" placeholder="Enter your number">
+                </div>
+
+                <div class="question" id="q8">
+                    <h3>Q8. What is 7 times 8?</h3>
+                    <input type="number" name="q8_answer" placeholder="Enter your number">
+                </div>
+
+                <div class="question" id="q9">
+                    <h3>Q9. If a cake is divided into 4 equal slices, and you eat 1 slice, what fraction of the cake is left?</h3>
+                    <label><input type="radio" name="q9_answer" value="a"> 1/4</label><br>
+                    <label><input type="radio" name="q9_answer" value="b"> 2/4</label><br>
+                    <label><input type="radio" name="q9_answer" value="c"> 3/4</label><br>
+                </div>
+
+                <div class="question" id="q10">
+                    <h3>Q10. What is 25% of 80?</h3>
+                    <input type="number" name="q10_answer" placeholder="Enter your number">
+                </div>
+
+                <div class="question" id="q11">
+                    <h3>Q11. Look at the image below. What is the value of angle 'x'?</h3>
+                    <img src="images/angle_x.jpg" alt="Image of a straight line with an angle labelled x and an adjacent angle of 60 degrees." style="max-width:100%; height:auto;">
+                    <p>*(You will need to create 'angle_x.png' and place it in your 'images' folder)*</p>
+                    <input type="number" name="q11_answer" placeholder="Enter degrees">
+                </div>
+
+                <div class="question" id="q12">
+                    <h3>Q12. A car travels 120 miles in 2 hours. What is its average speed in miles per hour?</h3>
+                    <input type="number" name="q12_answer" placeholder="Enter speed">
+                </div>
+
+                <button type="submit">Submit Assessment</button>
+            </form>
+        </div>
+
+        <div id="results" class="section" style="display: none;">
+            <h2>Assessment Results</h2>
+            <p id="overallScore"></p>
+            <p id="overallExpectations"></p>
+            <h3>Detailed Breakdown:</h3>
+            <div id="detailedResults">
+                </div>
+            <button id="sendEmailBtn" style="display: none;">Send Results to Parents</button>
+            <p id="emailStatus"></p>
+            <button onclick="location.reload()" class="restart-button">Start New Assessment</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

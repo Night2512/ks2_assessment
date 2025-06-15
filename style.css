@@ -50,6 +50,7 @@ h1, h2, h3 {
     margin-top: 5px;
     border: 1px solid #ddd;
     border-radius: 4px;
+	text-align: left;
 }
 
 .question-block input.small-input {

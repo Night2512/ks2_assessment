@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Key Stage 2 Online Assessment - Mona Teaches</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
     <div class="container">
@@ -36,7 +37,7 @@
         <div id="assessmentSection" class="section" style="display: none;">
             <p class="timer-display">Time Left: <span id="time">15:00</span></p>
             <p><strong>Total Time: 15 Minutes</strong></p>
-			
+
             <form id="assessmentForm">
                 <div class="question" id="q1">
                     <h3>Q1. Which word is an adverb?</h3>
@@ -201,8 +202,13 @@
                     <h3>Q30. What is 0.5 as a fraction?</h3>
                     <input type="text" name="q30_answer" placeholder="e.g., 1/2">
                 </div>
-				
-                <button type="submit">Submit Assessment</button>
+
+                <div class="turnstile-container">
+                    <div class="cf-turnstile" data-sitekey="0x4AAAAAABhJZmNH0OLuZAif" data-callback="turnstileCallback" data-error-callback="turnstileErrorCallback"></div>
+                    <p class="small-text">Please complete the security check above.</p>
+                </div>
+
+                <button type="submit" id="submitAssessmentBtn" disabled>Submit Assessment</button>
             </form>
         </div>
 
